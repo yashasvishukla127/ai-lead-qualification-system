@@ -1,24 +1,6 @@
-from src.models import LeadProfile
-
-
-lead = LeadProfile(
-    intent_score=15,
-    situation_summary="Customer looking for a 2BHK apartment.",
-    urgency="high",
-    is_first_buyer=True,
-    recommended_approach="Schedule a consultation call.",
-    confidence=0.92
-)
-
-print(lead)
-
-print(lead.model_dump())
-LeadProfile.model_validate(lead)
-
-
 import asyncio
 
-from src.llm import analyse_lead
+from llm import analyse_lead, draft_email
 
 
 async def main():
@@ -27,12 +9,20 @@ async def main():
     Young couple urgently looking for first home loan approval.
     """
 
-    result = await analyse_lead(fake_lead_1)
+    lead_profile = await analyse_lead(fake_lead_1)
 
-    print(result)
+    print("\nLEAD PROFILE:")
+    print(lead_profile)
 
-    if result:
-        print(result.model_dump())
+    if lead_profile:
+
+        email_draft = await draft_email(lead_profile)
+
+        print("\nEMAIL DRAFT:")
+        print(email_draft)
+
+        if email_draft:
+            print(email_draft.model_dump())
 
 
 if __name__ == "__main__":

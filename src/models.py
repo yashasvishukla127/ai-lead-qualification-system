@@ -41,3 +41,28 @@ class LeadProfile(BaseModel):
         le=1,
         description="Model confidence score between 0 and 1."
     )
+
+
+
+class EmailDraft(BaseModel):
+    """
+    Represents a generated personalised mortgage broker email draft.
+    """
+
+    subject: str
+
+    body: str
+
+    tone_score: int = Field(
+        ...,
+        ge=1,
+        le=10,
+        description="How warm and personalised the email feels."
+    )
+
+    word_count: int = Field(
+        ...,
+        ge=0
+    )
+
+    key_personalisation: str

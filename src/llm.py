@@ -82,14 +82,10 @@ async def draft_email(lead_profile: LeadProfile) -> EmailDraft | None:
     Generate a personalised mortgage broker email draft
     based on a LeadProfile.
     """
-
     system_prompt = """
         You are an expert mortgage broker assistant.
-
         Write warm, human, personalised mortgage outreach emails.
-
         You must respond ONLY with valid JSON.
-
         The JSON must match this schema exactly:
 
         {
@@ -169,7 +165,6 @@ Generate a personalised mortgage email for this lead:
         return None
     
 
-
 async def refine_email(
     draft: EmailDraft,
     lead_profile: LeadProfile
@@ -208,7 +203,7 @@ async def refine_email(
         response = await client.messages.create(
             model="claude-haiku-4-5",
             max_tokens=400,
-            temperature=0.4,
+            temperature=0.2,
             system=system_prompt,
             messages=[
                 {
@@ -247,4 +242,118 @@ async def refine_email(
 
     except Exception as e:
         print(f"Error refining email: {e}")
+        return None
+    
+
+
+async def process_lead(lead_text: str):
+
+    lead_profile = await analyse_lead(lead_text)
+
+    if lead_profile is None:
+        return {"error": "Lead analysis failed"}
+
+    email_draft = await draft_email(lead_profile)
+
+    return {
+        "lead_profile": lead_profile,
+        "email_draft": email_draft
+    }
+
+
+
+
+async def generate_followup(
+    lead_profile: LeadProfile,
+    follow_up_number: int,
+    days_since_last_contact: int,
+    previous_emails: list[str]
+) -> EmailDraft | None:
+    """
+    Generate contextual mortgage follow-up emails.
+    """
+
+    followup_strategy = {
+        1: "Value-add angle. Helpful and informative. No pressure.",
+        2: "Urgency angle. Explain why acting sooner may help.",
+        3: "Final polite check-in. Close the loop professionally."
+    }
+
+    strategy = followup_strategy.get(
+        follow_up_number,
+        "Friendly follow-up."
+    )
+
+    system_prompt = f"""
+    You are an expert mortgage broker assistant.
+
+    Write a personalised follow-up email.
+
+    Follow-up strategy:
+    {strategy}
+
+    Requirements:
+    - Reference the customer's original situation
+    - Avoid repeating previous emails
+    - Sound human and warm
+    - Keep email concise
+    - Return ONLY valid JSON
+
+    JSON schema:
+
+    {{
+      "subject": "Checking In About Your Home Loan",
+      "body": "Hi John...",
+      "tone_score": 8,
+      "word_count": 120,
+      "key_personalisation": "References the customer's urgency and first-home situation."
+    }}
+    """
+
+    try:
+
+        response = await client.messages.create(
+            model="claude-haiku-4-5",
+            max_tokens=400,
+            temperature=0.6,
+            system=system_prompt,
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"""
+                Lead Profile:
+                {lead_profile.model_dump()}
+
+                Days Since Last Contact:
+                {days_since_last_contact}
+
+                Previous Emails:
+                {previous_emails}
+
+                Generate follow-up #{follow_up_number}.
+                """
+                }
+            ]
+        )
+
+        text = "".join(
+            block.text
+            for block in response.content
+            if getattr(block, "type", None) == "text"
+        ).strip()
+
+        cleaned_text = (
+            text.replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )
+
+        followup_email = EmailDraft.model_validate_json(
+            cleaned_text
+        )
+
+        return followup_email
+
+    except Exception as e:
+        print(f"Error generating follow-up: {e}")
         return None

@@ -1,28 +1,52 @@
 import asyncio
 
 from llm import analyse_lead, draft_email
-
+from llm import (
+    process_lead,
+    generate_followup
+)
 
 async def main():
 
-    fake_lead_1 = """
+    fake_lead = """
     Young couple urgently looking for first home loan approval.
     """
 
-    lead_profile = await analyse_lead(fake_lead_1)
+    result = await process_lead(fake_lead)
 
-    print("\nLEAD PROFILE:")
-    print(lead_profile)
+    print("\nFULL PIPELINE RESULT:")
+    print(result)
 
-    if lead_profile:
+    if "error" in result:
+        return
 
-        email_draft = await draft_email(lead_profile)
+    lead_profile = result["lead_profile"]
+    initial_email = result["email_draft"]
 
-        print("\nEMAIL DRAFT:")
-        print(email_draft)
+    previous_emails = [
+        initial_email.body
+    ]
 
-        if email_draft:
-            print(email_draft.model_dump())
+    print("\nINITIAL EMAIL:")
+    print(initial_email.model_dump())
+
+    for i in range(1, 4):
+
+        followup = await generate_followup(
+            lead_profile=lead_profile,
+            follow_up_number=i,
+            days_since_last_contact=i * 3,
+            previous_emails=previous_emails
+        )
+
+        if followup:
+
+            print(f"\nFOLLOW-UP {i}:")
+            print(followup.model_dump())
+
+            previous_emails.append(
+                followup.body
+            )
 
 
 if __name__ == "__main__":

@@ -1,24 +1,20 @@
 import asyncio
 
-# from llm import analyse_lead, draft_email
-# from llm import (
-#     process_lead,
-#     generate_followup
-# )
-
-from gemini_llm import (
-    analyse_lead,
-    draft_email,
-    process_lead
+from llm import (
+    process_lead,
+    generate_followup
 )
+
 
 async def main():
 
     fake_lead = """
-    Young couple urgently looking for first home loan approval.
-    """
+Young couple urgently looking for first home loan approval.
+"""
 
-    result = await process_lead(fake_lead)
+    result = await process_lead(
+        fake_lead
+    )
 
     print("\nFULL PIPELINE RESULT:")
     print(result)
@@ -29,12 +25,12 @@ async def main():
     lead_profile = result["lead_profile"]
     initial_email = result["email_draft"]
 
+    print("\nINITIAL EMAIL:")
+    print(initial_email.model_dump())
+
     previous_emails = [
         initial_email.body
     ]
-
-    print("\nINITIAL EMAIL:")
-    print(initial_email.model_dump())
 
     for i in range(1, 4):
 

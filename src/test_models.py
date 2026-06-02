@@ -1,9 +1,15 @@
 import asyncio
 
-from llm import analyse_lead, draft_email
-from llm import (
-    process_lead,
-    generate_followup
+# from llm import analyse_lead, draft_email
+# from llm import (
+#     process_lead,
+#     generate_followup
+# )
+
+from gemini_llm import (
+    analyse_lead,
+    draft_email,
+    process_lead
 )
 
 async def main():

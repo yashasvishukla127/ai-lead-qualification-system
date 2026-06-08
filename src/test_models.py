@@ -69,8 +69,8 @@ def print_lead_profile(lead_profile):
 async def main():
 
     fake_lead = """
-Young couple urgently looking for first home loan approval.
-"""
+        Young couple urgently looking for first home loan approval.
+        """
 
     result = await process_lead(
         fake_lead

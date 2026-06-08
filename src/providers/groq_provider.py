@@ -1,8 +1,10 @@
 import os
+import asyncio
 
-from groq import AsyncGroq
+from groq import AsyncGroq, AuthenticationError, RateLimitError, APIConnectionError
 from dotenv import load_dotenv
 
+from exceptions import ProviderError
 
 load_dotenv()
 
@@ -17,20 +19,38 @@ async def generate_response(
     temperature: float = 0
 ) -> str:
 
-    response = await client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        temperature=temperature,
-        max_tokens=700,
-        messages=[
-            {
-                "role": "system",
-                "content": system_prompt
-            },
-            {
-                "role": "user",
-                "content": user_prompt
-            }
-        ]
-    )
+    try:
+        response = await client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            temperature=temperature,
+            max_tokens=700,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user",   "content": user_prompt}
+            ]
+        )
+        return response.choices[0].message.content.strip()
 
-    return response.choices[0].message.content.strip()
+    except AuthenticationError as e:
+        raise ProviderError(
+            provider="groq",
+            error_type="AuthenticationError",
+            detail=f"Invalid API key — check GROQ_API_KEY in .env | {e}",
+            retryable=False
+        )
+
+    except RateLimitError as e:
+        raise ProviderError(
+            provider="groq",
+            error_type="RateLimitError",
+            detail=str(e),
+            retryable=True
+        )
+
+    except APIConnectionError as e:
+        raise ProviderError(
+            provider="groq",
+            error_type="APIConnectionError",
+            detail=str(e),
+            retryable=True
+        )

@@ -1,116 +1,102 @@
 import asyncio
 import json
+import os
 from datetime import datetime
-
-import anthropic
 from pydantic import ValidationError
 
-from models import (
-    LeadProfile,
-    EmailDraft
-)
+from models import LeadProfile, EmailDraft
+from exceptions import ProviderError
 
-# SWITCH PROVIDER  
+# SWITCH PROVIDER HERE
 from providers.groq_provider import generate_response
-
- 
 # from providers.anthropic_provider import generate_response
 # from providers.gemini_provider import generate_response
 
 
+# ── Logger ────────────────────────────────────────────────────────────────────
+
+LOG_PATH = os.path.join(os.path.dirname(__file__), "..", "errors.log")
+
 def log_error(function_name: str, error_type: str, detail: str) -> None:
     timestamp = datetime.now().isoformat()
     line = f"[{timestamp}] | {function_name} | {error_type} | {detail}\n"
-    with open("errors.log", "a", encoding="utf-8") as f:
+    with open(LOG_PATH, "a", encoding="utf-8") as f:
         f.write(line)
 
 
-def clean_json(text: str) -> str:
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
+def clean_json(text: str) -> str:
     return (
         text.replace("```json", "")
-        .replace("```", "")
-        .strip()
+            .replace("```", "")
+            .strip()
     )
 
 
-async def analyse_lead(
-    lead_text: str
-) -> LeadProfile | None:
+# ── Core functions ────────────────────────────────────────────────────────────
+
+async def analyse_lead(lead_text: str) -> LeadProfile | None:
 
     system_prompt = """
-        You are a mortgage broker assistant.
+You are a mortgage broker assistant.
+Return ONLY valid JSON.
+JSON schema:
+{
+    "intent_score": 8,
+    "situation_summary": "Customer is looking for a first home loan.",
+    "urgency": "high",
+    "is_first_buyer": true,
+    "recommended_approach": "Schedule consultation immediately.",
+    "confidence": 0.92
+}
+"""
 
-        Return ONLY valid JSON.
-
-        JSON schema:
-
-            {
-                "intent_score": 8,
-                "situation_summary": "Customer is looking for a first home loan.",
-                "urgency": "high",
-                "is_first_buyer": true,
-                "recommended_approach": "Schedule consultation immediately.",
-                "confidence": 0.92
-            }
-        """
+    text = None  # needed so JSONDecodeError handler can reference it safely
 
     try:
-
         try:
             text = await generate_response(
                 system_prompt=system_prompt,
                 user_prompt=lead_text,
                 temperature=0
             )
-        except anthropic.RateLimitError:
-            await asyncio.sleep(10)
-            text = await generate_response(
-                system_prompt=system_prompt,
-                user_prompt=lead_text,
-                temperature=0
-            )
+        except ProviderError as e:
+            if e.retryable:
+                log_error("analyse_lead", e.error_type, f"Retrying after 10s — {e}")
+                await asyncio.sleep(10)
+                text = await generate_response(
+                    system_prompt=system_prompt,
+                    user_prompt=lead_text,
+                    temperature=0
+                )
+            else:
+                raise  # non-retryable → fall to outer except
 
         cleaned = clean_json(text)
+        return LeadProfile.model_validate_json(cleaned)
 
-        return LeadProfile.model_validate_json(
-            cleaned
-        )
-
-    except anthropic.APIConnectionError as e:
-        log_error("analyse_lead", "APIConnectionError", str(e))
+    except ProviderError as e:
+        log_error("analyse_lead", e.error_type, str(e))
         return None
 
-    except anthropic.RateLimitError as e:
-        log_error("analyse_lead", "RateLimitError", str(e))
-        return None
-
-    except anthropic.APIStatusError as e:
-        log_error("analyse_lead", "APIStatusError", f"{e.status_code} {e.message}")
-        return None
-
-    except json.JSONDecodeError:
-        log_error("analyse_lead", "JSONDecodeError", text)
+    except json.JSONDecodeError as e:
+        log_error("analyse_lead", "JSONDecodeError", f"raw={text} | err={e}")
         return None
 
     except ValidationError as e:
-        log_error("analyse_lead", "ValidationError", str(e.errors()))
+        failed = [str(err["loc"]) for err in e.errors()]
+        log_error("analyse_lead", "ValidationError", f"fields={failed}")
         return None
 
 
-async def draft_email(
-    lead_profile: LeadProfile
-) -> EmailDraft | None:
+async def draft_email(lead_profile: LeadProfile) -> EmailDraft | None:
 
     system_prompt = """
 You are an expert mortgage broker assistant.
-
 Write warm personalised mortgage emails.
-
 Return ONLY valid JSON.
-
 JSON schema:
-
 {
   "subject": "Helping You With Your First Home Loan",
   "body": "Hi John...",
@@ -120,71 +106,52 @@ JSON schema:
 }
 """
 
-    try:
+    text = None
 
+    try:
         try:
             text = await generate_response(
                 system_prompt=system_prompt,
-                user_prompt=f"""
-Lead Profile:
-{lead_profile.model_dump()}
-""",
+                user_prompt=f"Lead Profile:\n{lead_profile.model_dump()}",
                 temperature=0.6
             )
-        except anthropic.RateLimitError:
-            await asyncio.sleep(10)
-            text = await generate_response(
-                system_prompt=system_prompt,
-                user_prompt=f"""
-Lead Profile:
-{lead_profile.model_dump()}
-""",
-                temperature=0.6
-            )
+        except ProviderError as e:
+            if e.retryable:
+                log_error("draft_email", e.error_type, f"Retrying after 10s — {e}")
+                await asyncio.sleep(10)
+                text = await generate_response(
+                    system_prompt=system_prompt,
+                    user_prompt=f"Lead Profile:\n{lead_profile.model_dump()}",
+                    temperature=0.6
+                )
+            else:
+                raise
 
         cleaned = clean_json(text)
+        return EmailDraft.model_validate_json(cleaned)
 
-        email = EmailDraft.model_validate_json(
-            cleaned
-        )
-
-        return email
-
-    except anthropic.APIConnectionError as e:
-        log_error("draft_email", "APIConnectionError", str(e))
+    except ProviderError as e:
+        log_error("draft_email", e.error_type, str(e))
         return None
 
-    except anthropic.RateLimitError as e:
-        log_error("draft_email", "RateLimitError", str(e))
-        return None
-
-    except anthropic.APIStatusError as e:
-        log_error("draft_email", "APIStatusError", f"{e.status_code} {e.message}")
-        return None
-
-    except json.JSONDecodeError:
-        log_error("draft_email", "JSONDecodeError", text)
+    except json.JSONDecodeError as e:
+        log_error("draft_email", "JSONDecodeError", f"raw={text} | err={e}")
         return None
 
     except ValidationError as e:
-        log_error("draft_email", "ValidationError", str(e.errors()))
+        failed = [str(err["loc"]) for err in e.errors()]
+        log_error("draft_email", "ValidationError", f"fields={failed}")
         return None
 
 
-async def process_lead(
-    lead_text: str
-):
+async def process_lead(lead_text: str):
 
-    lead_profile = await analyse_lead(
-        lead_text
-    )
+    lead_profile = await analyse_lead(lead_text)
 
     if lead_profile is None:
         return {"error": "Lead analysis failed"}
 
-    email_draft = await draft_email(
-        lead_profile
-    )
+    email_draft = await draft_email(lead_profile)
 
     return {
         "lead_profile": lead_profile,
@@ -205,25 +172,15 @@ async def generate_followup(
         3: "Polite final check-in."
     }
 
-    strategy = strategies.get(
-        follow_up_number,
-        "Friendly follow-up"
-    )
+    strategy = strategies.get(follow_up_number, "Friendly follow-up")
 
     system_prompt = f"""
 You are an expert mortgage broker assistant.
-
 Write a personalised follow-up email.
-
-Strategy:
-{strategy}
-
+Strategy: {strategy}
 Avoid repeating previous emails.
-
 Return ONLY valid JSON.
-
 JSON schema:
-
 {{
   "subject": "Checking In About Your Home Loan",
   "body": "Hi John...",
@@ -233,31 +190,32 @@ JSON schema:
 }}
 """
 
-    try:
+    text = None
 
+    try:
         text = await generate_response(
             system_prompt=system_prompt,
             user_prompt=f"""
-Lead Profile:
-{lead_profile.model_dump()}
-
-Days Since Last Contact:
-{days_since_last_contact}
-
-Previous Emails:
-{previous_emails}
-
+Lead Profile: {lead_profile.model_dump()}
+Days Since Last Contact: {days_since_last_contact}
+Previous Emails: {previous_emails}
 Generate follow-up #{follow_up_number}
 """,
             temperature=0.6
         )
 
         cleaned = clean_json(text)
+        return EmailDraft.model_validate_json(cleaned)
 
-        return EmailDraft.model_validate_json(
-            cleaned
-        )
+    except ProviderError as e:
+        log_error("generate_followup", e.error_type, str(e))
+        return None
 
-    except Exception as e:
-        print(f"Error generating follow-up:\n{e}")
+    except json.JSONDecodeError as e:
+        log_error("generate_followup", "JSONDecodeError", f"raw={text} | err={e}")
+        return None
+
+    except ValidationError as e:
+        failed = [str(err["loc"]) for err in e.errors()]
+        log_error("generate_followup", "ValidationError", f"fields={failed}")
         return None

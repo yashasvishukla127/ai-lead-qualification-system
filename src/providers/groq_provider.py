@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 
 from exceptions import ProviderError
 
+from utils.cost_tracker import log_cost
+
 load_dotenv()
 
 client = AsyncGroq(
@@ -29,6 +31,15 @@ async def generate_response(
                 {"role": "user",   "content": user_prompt}
             ]
         )
+        if not hasattr(response.usage, "input_tokens"):
+            response.usage.input_tokens = response.usage.prompt_tokens
+        if not hasattr(response.usage, "output_tokens"):
+            response.usage.output_tokens = response.usage.completion_tokens
+
+        input_tokens = response.usage.input_tokens
+        output_tokens = response.usage.output_tokens
+        log_cost(function_name="generate_response", input_tokens=input_tokens, output_tokens=output_tokens)
+
         return response.choices[0].message.content.strip()
 
     except AuthenticationError as e:

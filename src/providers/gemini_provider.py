@@ -4,6 +4,8 @@ from anthropic import AsyncAnthropic
 from dotenv import load_dotenv
 
 
+from utils.cost_tracker import log_cost
+
 load_dotenv()
 
 client = AsyncAnthropic(
@@ -29,6 +31,10 @@ async def generate_response(
             }
         ]
     )
+
+    input_tokens = response.usage.input_tokens
+    output_tokens = response.usage.output_tokens
+    log_cost(function_name="generate_response", input_tokens=input_tokens, output_tokens=output_tokens)
 
     text = "".join(
         block.text

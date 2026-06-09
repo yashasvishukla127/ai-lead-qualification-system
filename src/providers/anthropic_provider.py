@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 
 from exceptions import ProviderError
 
+from utils.cost_tracker import log_cost
+
 load_dotenv()
 
 client = AsyncAnthropic(
@@ -32,6 +34,10 @@ async def generate_response(
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}]
         )
+
+        input_tokens = response.usage.input_tokens
+        output_tokens = response.usage.output_tokens
+        log_cost(function_name="generate_response", input_tokens=input_tokens, output_tokens=output_tokens)
 
         return "".join(
             block.text

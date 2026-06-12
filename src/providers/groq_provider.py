@@ -4,9 +4,9 @@ import asyncio
 from groq import AsyncGroq, AuthenticationError, RateLimitError, APIConnectionError
 from dotenv import load_dotenv
 
-from exceptions import ProviderError
+from src.exceptions import ProviderError
 
-from utils.cost_tracker import log_cost
+from src.utils.cost_tracker import log_cost
 
 load_dotenv()
 

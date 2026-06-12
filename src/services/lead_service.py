@@ -4,11 +4,14 @@ import os
 from datetime import datetime
 from pydantic import ValidationError
 
-from models import LeadProfile, EmailDraft
-from exceptions import ProviderError
+# from models import LeadProfile, EmailDraft
+# from exceptions import ProviderError
+from src.models import LeadProfile, EmailDraft
+from src.exceptions import ProviderError
 
 # SWITCH PROVIDER HERE
-from providers.groq_provider import generate_response
+#from providers.groq_provider import generate_response
+from src.providers.groq_provider import generate_response
 # from providers.anthropic_provider import generate_response
 # from providers.gemini_provider import generate_response
 
@@ -39,20 +42,21 @@ def clean_json(text: str) -> str:
 async def analyse_lead(lead_text: str) -> LeadProfile | None:
 
     system_prompt = """
-You are a mortgage broker assistant.
-Return ONLY valid JSON.
-JSON schema:
-{
-    "intent_score": 8,
-    "situation_summary": "Customer is looking for a first home loan.",
-    "urgency": "high",
-    "is_first_buyer": true,
-    "recommended_approach": "Schedule consultation immediately.",
-    "confidence": 0.92
-}
-"""
+    You are a mortgage broker assistant.
+    Return ONLY valid JSON.
+    JSON schema:
+    {
+        "intent_score": 8,
+        "situation_summary": "Customer is looking for a first home loan.",
+        "urgency": "high",
+        "is_first_buyer": true,
+        "recommended_approach": "Schedule consultation immediately.",
+        "confidence": 0.92
+    }
+    """
 
-    text = None  # needed so JSONDecodeError handler can reference it safely
+    text = None  # needed so JSONDecodeError handler can reference it safely 
+    # if there is some error app do not crashes , instead it prints text 
 
     try:
         try:
@@ -76,6 +80,8 @@ JSON schema:
         cleaned = clean_json(text)
         return LeadProfile.model_validate_json(cleaned)
 
+        # if not even retry then other left ones except would be checked
+
     except ProviderError as e:
         log_error("analyse_lead", e.error_type, str(e))
         return None
@@ -93,18 +99,18 @@ JSON schema:
 async def draft_email(lead_profile: LeadProfile) -> EmailDraft | None:
 
     system_prompt = """
-You are an expert mortgage broker assistant.
-Write warm personalised mortgage emails.
-Return ONLY valid JSON.
-JSON schema:
-{
-  "subject": "Helping You With Your First Home Loan",
-  "body": "Hi John...",
-  "tone_score": 8,
-  "word_count": 120,
-  "key_personalisation": "References urgency and first-home situation."
-}
-"""
+        You are an expert mortgage broker assistant.
+        Write warm personalised mortgage emails.
+        Return ONLY valid JSON.
+        JSON schema:
+        {
+        "subject": "Helping You With Your First Home Loan",
+        "body": "Hi John...",
+        "tone_score": 8,
+        "word_count": 120,
+        "key_personalisation": "References urgency and first-home situation."
+        }
+        """
 
     text = None
 
@@ -112,7 +118,7 @@ JSON schema:
         try:
             text = await generate_response(
                 system_prompt=system_prompt,
-                user_prompt=f"Lead Profile:\n{lead_profile.model_dump()}",
+                user_prompt=f"Lead Profile:\n{lead_profile.model_dump()}", #model_dump - for making python readable dictionary format
                 temperature=0.6
             )
         except ProviderError as e:
@@ -128,8 +134,8 @@ JSON schema:
                 raise
 
         cleaned = clean_json(text)
-        return EmailDraft.model_validate_json(cleaned)
-
+        return EmailDraft.model_validate_json(cleaned) #EmailDraft must contain 
+                        # it validates ex. must contain subject ,body ,word_count ( all as defined)             
     except ProviderError as e:
         log_error("draft_email", e.error_type, str(e))
         return None
@@ -175,20 +181,20 @@ async def generate_followup(
     strategy = strategies.get(follow_up_number, "Friendly follow-up")
 
     system_prompt = f"""
-You are an expert mortgage broker assistant.
-Write a personalised follow-up email.
-Strategy: {strategy}
-Avoid repeating previous emails.
-Return ONLY valid JSON.
-JSON schema:
-{{
-  "subject": "Checking In About Your Home Loan",
-  "body": "Hi John...",
-  "tone_score": 8,
-  "word_count": 120,
-  "key_personalisation": "References urgency and first-home situation."
-}}
-"""
+        You are an expert mortgage broker assistant.
+        Write a personalised follow-up email.
+        Strategy: {strategy}
+        Avoid repeating previous emails.
+        Return ONLY valid JSON.
+        JSON schema:
+        {{
+        "subject": "Checking In About Your Home Loan",
+        "body": "Hi John...",
+        "tone_score": 8,
+        "word_count": 120,
+        "key_personalisation": "References urgency and first-home situation."
+        }}
+        """
 
     text = None
 
@@ -196,11 +202,11 @@ JSON schema:
         text = await generate_response(
             system_prompt=system_prompt,
             user_prompt=f"""
-Lead Profile: {lead_profile.model_dump()}
-Days Since Last Contact: {days_since_last_contact}
-Previous Emails: {previous_emails}
-Generate follow-up #{follow_up_number}
-""",
+            Lead Profile: {lead_profile.model_dump()}
+            Days Since Last Contact: {days_since_last_contact}
+            Previous Emails: {previous_emails}
+            Generate follow-up #{follow_up_number}
+            """,
             temperature=0.6
         )
 

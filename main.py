@@ -3,6 +3,18 @@ import os
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
+from contextlib import asynccontextmanager
+import logging
+
+from fastapi import FastAPI
+
+from src.api.middleware.correlation import CorrelationIDMiddleware #every every request gets corelation id
+
+from src.api.routers import leads, health, costs
+from src.utils.logger import configure_logging
+
+
+logger = logging.getLogger(__name__)
 
 def test_connection() -> None:
     load_dotenv()
@@ -59,3 +71,34 @@ client = Anthropic(
 page = client.beta.models.list()
 page = page.data[0]
 print(page.id)
+
+
+
+
+
+
+
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    configure_logging()
+    logger.info("Lead Analyser API starting up")
+    yield
+    logger.info("Lead Analyser API shutting down")
+
+
+app = FastAPI(
+    title="Lead Analyser API",
+    version="1.0.0",
+    description="Async lead analysis pipeline with Claude",
+    lifespan=lifespan,
+)
+
+# Middleware — must be added before routers
+app.add_middleware(CorrelationIDMiddleware)
+
+# Routers
+app.include_router(leads.router)
+app.include_router(health.router)
+app.include_router(costs.router)

@@ -28,7 +28,7 @@ async def analyse_lead(request: AnalyseLeadRequest) -> AnalyseLeadResponse:
             correlation_id=cid,
             lead_profile=result["lead_profile"],
             email_draft=result["email_draft"],
-            follow_up_angles=result["follow_up_angles"],
+            # follow_up_angles=result["follow_up_angles"],
         )
 
     except ValueError as e:

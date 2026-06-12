@@ -27,11 +27,11 @@ MOCK_EMAIL_DRAFT = EmailDraft(
 MOCK_PROCESS_RESULT = {
     "lead_profile": MOCK_LEAD_PROFILE,
     "email_draft": MOCK_EMAIL_DRAFT,
-    "follow_up_angles": {
-        "value_add": "Show ROI dashboard",
-        "urgency": "Q2 deadline approaching",
-        "final": "Offer a free audit",
-    },
+    # "follow_up_angles": {
+    #     "value_add": "Show ROI dashboard",
+    #     "urgency": "Q2 deadline approaching",
+    #     "final": "Offer a free audit",
+    # },
 }
 
 

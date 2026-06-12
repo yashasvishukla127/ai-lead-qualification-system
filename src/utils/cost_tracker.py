@@ -2,8 +2,9 @@
 import csv
 import os
 from datetime import datetime
+from pathlib import Path
 
-COSTS_FILE = "costs.csv"
+COSTS_FILE = str(Path(__file__).resolve().parent.parent.parent / "costs.csv")
 
 
 def log_cost(function_name: str, input_tokens: int, output_tokens: int) -> None:

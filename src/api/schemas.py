@@ -15,17 +15,17 @@ class AnalyseLeadRequest(BaseModel):
     }
 
 
-class FollowUpAngles(BaseModel):
-    value_add: str
-    urgency: str
-    final: str
+# class FollowUpAngles(BaseModel):
+#     value_add: str
+#     urgency: str
+#     final: str
 
 
 class AnalyseLeadResponse(BaseModel):
     correlation_id: str
     lead_profile: LeadProfile
     email_draft: EmailDraft
-    follow_up_angles: FollowUpAngles
+    # follow_up_angles: FollowUpAngles
 
 
 class HealthResponse(BaseModel):
@@ -36,7 +36,9 @@ class HealthResponse(BaseModel):
 
 class CostEntry(BaseModel):
     timestamp: str
-    provider: str
+    # provider: str
+    function_name: str
+    function_version: str
     input_tokens: int
     output_tokens: int
     cost_usd: float

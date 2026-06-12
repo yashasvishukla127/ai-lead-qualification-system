@@ -30,7 +30,7 @@ async def get_costs() -> CostsResponse:
             for row in reader:
                 entry = CostEntry(
                     timestamp=row["timestamp"],
-                    provider=row["provider"],
+                    provider_name=row["provider"],
                     input_tokens=int(row["input_tokens"]),
                     output_tokens=int(row["output_tokens"]),
                     cost_usd=float(row["cost_usd"]),

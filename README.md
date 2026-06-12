@@ -6,6 +6,6 @@ http://localhost:8000/docs
 
 **to run test**
 Run tests:
-pytest test_api.py -v
-pytest test_errors.py -v
-pytest test_pipeline.py -v
+pytest tests/test_api.py -v
+pytest tests/test_errors.py -v
+pytest tests/test_pipeline.py -v

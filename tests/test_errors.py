@@ -1,3 +1,5 @@
+# src/tests/test_errors.py
+
 import asyncio
 import os
 from unittest.mock import AsyncMock, patch
@@ -8,13 +10,13 @@ PROVIDER = "groq"       # change to "anthropic" to test that
 
 if PROVIDER == "groq":
     import groq as sdk
-    PATCH_TARGET = "providers.groq_provider.client"
+    PATCH_TARGET = "src.providers.groq_provider.client"
 else:
     import anthropic as sdk
-    PATCH_TARGET = "providers.anthropic_provider.client"
+    PATCH_TARGET = "src.providers.anthropic_provider.client"
 
-from services.lead_service import analyse_lead
-from models import LeadProfile
+from src.services.lead_service import analyse_lead
+from src.models import LeadProfile
 
 
 FAKE_LEAD = "Young couple urgently needs first home loan."
@@ -71,14 +73,14 @@ async def test_rate_limit():
             response=AsyncMock(status_code=429),
             body={}
         )
-        mock_path = "providers.groq_provider.client.chat.completions.create"
+        mock_path = "src.providers.groq_provider.client.chat.completions.create"
     else:
         error_to_raise = sdk.RateLimitError(
             message="Rate limit exceeded",
             response=AsyncMock(status_code=429),
             body={}
         )
-        mock_path = "providers.anthropic_provider.client.messages.create"
+        mock_path = "src.providers.anthropic_provider.client.messages.create"
 
     with patch(mock_path, new_callable=AsyncMock) as mock_call:
         mock_call.side_effect = error_to_raise
@@ -96,10 +98,10 @@ async def test_connection_error():
 
     if PROVIDER == "groq":
         error_to_raise = sdk.APIConnectionError(request=AsyncMock())
-        mock_path = "providers.groq_provider.client.chat.completions.create"
+        mock_path = "src.providers.groq_provider.client.chat.completions.create"
     else:
         error_to_raise = sdk.APIConnectionError(request=AsyncMock())
-        mock_path = "providers.anthropic_provider.client.messages.create"
+        mock_path = "src.providers.anthropic_provider.client.messages.create"
 
     with patch(mock_path, new_callable=AsyncMock) as mock_call:
         mock_call.side_effect = error_to_raise
@@ -116,7 +118,7 @@ async def test_json_decode_error():
     print("\n>>> TEST 4: JSONDecodeError")
 
     with patch(
-        "services.lead_service.generate_response",
+        "src.services.lead_service.generate_response",
         new_callable=AsyncMock
     ) as mock_gen:
 
@@ -136,7 +138,7 @@ async def test_validation_error():
     print("\n>>> TEST 5: ValidationError (wrong JSON schema)")
 
     with patch(
-        "services.lead_service.generate_response",
+        "src.services.lead_service.generate_response",
         new_callable=AsyncMock
     ) as mock_gen:
 
@@ -166,7 +168,7 @@ async def test_api_status_error():
     )
 
     with patch(
-        "providers.anthropic_provider.client.messages.create",
+        "src.providers.anthropic_provider.client.messages.create",
         new_callable=AsyncMock
     ) as mock_call:
         mock_call.side_effect = error_to_raise

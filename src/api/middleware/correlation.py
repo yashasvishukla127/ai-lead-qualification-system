@@ -1,3 +1,11 @@
+from pathlib import Path
+
+# This gives the absolute folder path of the executing script
+file_dir = Path(__file__).resolve().parent
+print(f"File directory: {file_dir}")
+
+
+
 import uuid
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request

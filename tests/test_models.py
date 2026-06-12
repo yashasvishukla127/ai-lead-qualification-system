@@ -1,6 +1,6 @@
 import asyncio
 
-from services.lead_service import (
+from src.services.lead_service import (
     process_lead,
     generate_followup
 )

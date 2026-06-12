@@ -1,3 +1,9 @@
+from pathlib import Path
+
+# This gives the absolute folder path of the executing script
+file_dir = Path(__file__).resolve().parent
+print(f"File directory: {file_dir}")
+# D:\ai engineering\Agentic Ai\src\providers-groq_provider.py
 import os
 import asyncio
 

@@ -1,7 +1,8 @@
+#src/tests/test_pipeline.py
 import pytest
 from unittest.mock import AsyncMock, patch
-from services.lead_service import analyse_lead, draft_email, generate_followup
-from models import LeadProfile, EmailDraft
+from src.services.lead_service import analyse_lead, draft_email, generate_followup
+from src.models import LeadProfile, EmailDraft
 
 
 # ── Reusable fixtures ─────────────────────────────────────────────────────────
@@ -47,7 +48,7 @@ def lead_profile():
 
 async def test_analyse_lead_valid_text_returns_lead_profile():
     with patch(
-        "services.lead_service.generate_response",
+        "src.services.lead_service.generate_response",
         new_callable=AsyncMock
     ) as mock_gen:
 
@@ -67,7 +68,7 @@ async def test_analyse_lead_valid_text_returns_lead_profile():
 
 async def test_analyse_lead_empty_string_returns_none():
     with patch(
-        "services.lead_service.generate_response",
+        "src.services.lead_service.generate_response",
         new_callable=AsyncMock
     ) as mock_gen:
 
@@ -84,7 +85,7 @@ async def test_analyse_lead_empty_string_returns_none():
 
 async def test_draft_email_returns_email_draft(lead_profile):
     with patch(
-        "services.lead_service.generate_response",
+        "src.services.lead_service.generate_response",
         new_callable=AsyncMock
     ) as mock_gen:
 
@@ -104,7 +105,7 @@ async def test_draft_email_returns_email_draft(lead_profile):
 
 async def test_followup_1_and_3_have_different_bodies(lead_profile):
     with patch(
-        "services.lead_service.generate_response",
+        "src.services.lead_service.generate_response",
         new_callable=AsyncMock
     ) as mock_gen:
 
@@ -134,7 +135,7 @@ async def test_followup_1_and_3_have_different_bodies(lead_profile):
 
 async def test_analyse_lead_bad_json_returns_none():
     with patch(
-        "services.lead_service.generate_response",
+        "src.services.lead_service.generate_response",
         new_callable=AsyncMock
     ) as mock_gen:
 
@@ -148,10 +149,10 @@ async def test_analyse_lead_bad_json_returns_none():
 # ── Test 6: draft_email() returns None on provider error, never raises ────────
 
 async def test_draft_email_provider_error_returns_none(lead_profile):
-    from exceptions import ProviderError
+    from src.exceptions import ProviderError
 
     with patch(
-        "services.lead_service.generate_response",
+        "src.services.lead_service.generate_response",
         new_callable=AsyncMock
     ) as mock_gen:
 

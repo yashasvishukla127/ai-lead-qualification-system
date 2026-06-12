@@ -3,12 +3,13 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 from unittest.mock import AsyncMock, patch
 
-from main import app
+from src.main import app
 from src.models import LeadProfile, EmailDraft  # adjust to your actual imports
 
 
 MOCK_LEAD_PROFILE = LeadProfile(
     intent_score=8,
+    situation_summary="Startup founder evaluating automation tools.",  # add
     urgency="high",
     is_first_buyer=True,
     confidence=0.9,
@@ -19,6 +20,8 @@ MOCK_EMAIL_DRAFT = EmailDraft(
     subject="Quick question about your reporting workflow",
     body="Hi Sarah, I noticed...",
     tone_score=8,
+    word_count=10,               # add
+    key_personalisation="n/a",   # add
 )
 
 MOCK_PROCESS_RESULT = {

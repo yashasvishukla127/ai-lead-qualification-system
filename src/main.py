@@ -1,3 +1,120 @@
+#src/main.py
+
+
+# import logging
+# from contextlib import asynccontextmanager
+
+# from fastapi import FastAPI, Request
+# from fastapi.responses import HTMLResponse
+# from fastapi.staticfiles import StaticFiles
+# from fastapi.templating import Jinja2Templates
+
+# from src.api.middleware.correlation import CorrelationIDMiddleware
+# from src.api.routers import leads, health, costs
+# from src.utils.logger import configure_logging
+
+# logger = logging.getLogger(__name__)
+
+
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     configure_logging()
+#     logger.info("Lead Analyser API starting up")
+#     yield
+#     logger.info("Lead Analyser API shutting down")
+
+
+# app = FastAPI(
+#     title="Lead Analyser API",
+#     version="1.0.0",
+#     description="Async lead analysis pipeline with Claude",
+#     lifespan=lifespan,
+# )
+
+# # Frontend
+# app.mount("/static", StaticFiles(directory="static"), name="static")
+# templates = Jinja2Templates(directory="templates")
+
+# @app.get("/", response_class=HTMLResponse)
+# async def serve_ui(request: Request):
+#     return templates.TemplateResponse(request=request, name="index.html")
+
+# # Middleware
+# app.add_middleware(CorrelationIDMiddleware)
+
+# # Routers
+# app.include_router(leads.router)
+# app.include_router(health.router)
+# app.include_router(costs.router)
+
+
+
+
+# import logging
+# from contextlib import asynccontextmanager
+
+# from fastapi import FastAPI, Request
+# from fastapi.responses import HTMLResponse
+# from fastapi.staticfiles import StaticFiles
+# from fastapi.templating import Jinja2Templates
+
+# from src.api.middleware.correlation import CorrelationIDMiddleware
+# from src.api.routers import leads, health, costs
+# from src.utils.logger import configure_logging
+
+# logger = logging.getLogger(__name__)
+
+
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     configure_logging()
+#     logger.info("Lead Analyser API starting up")
+#     yield
+#     logger.info("Lead Analyser API shutting down")
+
+
+# app = FastAPI(
+#     title="Lead Analyser API",
+#     version="1.0.0",
+#     description="Async lead analysis pipeline with Claude",
+#     lifespan=lifespan,
+# )
+
+# # ---------------------------
+# # Frontend
+# # ---------------------------
+
+# app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# templates = Jinja2Templates(directory="templates")
+
+
+# @app.get("/", response_class=HTMLResponse)
+# async def serve_ui(request: Request):
+#     return templates.TemplateResponse(request=request, name="index.html")
+
+
+# # ---------------------------
+# # Middleware
+# # ---------------------------
+
+# app.add_middleware(CorrelationIDMiddleware)
+
+# # ---------------------------
+# # Routers
+# # ---------------------------
+
+# app.include_router(leads.router)
+# app.include_router(health.router)
+# app.include_router(costs.router)
+
+
+
+
+
+
+
+
 import os
 
 from anthropic import Anthropic
@@ -12,6 +129,61 @@ from src.api.middleware.correlation import CorrelationIDMiddleware #every every 
 
 from src.api.routers import leads, health, costs
 from src.utils.logger import configure_logging
+
+# #================front end part============================================================
+# # main.py
+# from contextlib import asynccontextmanager
+# import logging
+
+# from fastapi import FastAPI, Request
+# from fastapi.responses import HTMLResponse
+# from fastapi.staticfiles import StaticFiles
+# from fastapi.templating import Jinja2Templates
+
+# from src.api.middleware.correlation import CorrelationIDMiddleware
+# from src.api.routers import leads, health, costs
+# from src.utils.logger import configure_logging
+
+# logger = logging.getLogger(__name__)
+
+
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     configure_logging()
+#     logger.info("Lead Analyser API starting up")
+#     yield
+#     logger.info("Lead Analyser API shutting down")
+
+
+# # ── 1. Create the app ──────────────────────────────
+# app = FastAPI(
+#     title="Lead Analyser API",
+#     version="1.0.0",
+#     description="Async lead analysis pipeline with Claude",
+#     lifespan=lifespan,
+# )
+
+# # ── 2. Frontend (add these right after app = FastAPI) ──
+# app.mount("/static", StaticFiles(directory="static"), name="static")
+# templates = Jinja2Templates(directory="templates")
+
+# @app.get("/", response_class=HTMLResponse)
+# async def serve_ui(request: Request):
+#     return templates.TemplateResponse(request=request, name="index.html")
+   ##remeber to keep it this way only as it wont let frontend run then 
+# # ── 3. Middleware ──────────────────────────────────
+# app.add_middleware(CorrelationIDMiddleware)
+
+# # ── 4. API routers ─────────────────────────────────
+# app.include_router(leads.router)
+# app.include_router(health.router)
+# app.include_router(costs.router)
+
+
+
+
+
+# #=================front end part end============================================================
 
 
 logger = logging.getLogger(__name__)

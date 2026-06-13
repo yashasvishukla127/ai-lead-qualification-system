@@ -23,3 +23,12 @@
 [2026-06-12T14:09:21.055622] | analyse_lead | APIConnectionError | [groq] APIConnectionError: Connection error.
 [2026-06-12T14:09:21.066693] | analyse_lead | ValidationError | fields=['()']
 [2026-06-12T14:09:21.081851] | analyse_lead | ValidationError | fields=["('intent_score',)", "('situation_summary',)", "('urgency',)", "('is_first_buyer',)", "('recommended_approach',)", "('confidence',)"]
+[2026-06-13T07:59:06.738376] | analyse_lead | ValidationError | fields=["('intent_score',)", "('situation_summary',)", "('urgency',)", "('is_first_buyer',)", "('recommended_approach',)", "('confidence',)"]
+[2026-06-13T07:59:06.759597] | analyse_lead | ValidationError | fields=['()']
+[2026-06-13T07:59:06.766944] | draft_email | AuthenticationError | [groq] AuthenticationError: Invalid API key
+[2026-06-13T07:59:10.587308] | analyse_lead | RateLimitError | Retrying after 10s — [groq] RateLimitError: Rate limit exceeded
+[2026-06-13T07:59:20.601746] | analyse_lead | RateLimitError | [groq] RateLimitError: Rate limit exceeded
+[2026-06-13T07:59:20.610905] | analyse_lead | APIConnectionError | Retrying after 10s — [groq] APIConnectionError: Connection error.
+[2026-06-13T07:59:30.626420] | analyse_lead | APIConnectionError | [groq] APIConnectionError: Connection error.
+[2026-06-13T07:59:30.632854] | analyse_lead | ValidationError | fields=['()']
+[2026-06-13T07:59:30.639182] | analyse_lead | ValidationError | fields=["('intent_score',)", "('situation_summary',)", "('urgency',)", "('is_first_buyer',)", "('recommended_approach',)", "('confidence',)"]

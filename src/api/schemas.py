@@ -38,7 +38,7 @@ class CostEntry(BaseModel):
     timestamp: str
     # provider: str
     function_name: str
-    function_version: str
+    # function_version: str
     input_tokens: int
     output_tokens: int
     cost_usd: float

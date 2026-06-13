@@ -3,15 +3,26 @@ import csv
 import os
 from datetime import datetime
 from pathlib import Path
+import logging
 
-COSTS_FILE = str(Path(__file__).resolve().parent.parent.parent / "costs.csv")
+logger = logging.getLogger(__name__)
 
+# COSTS_FILE = str(Path(__file__).resolve().parent.parent.parent / "costs.csv")
+COSTS_FILE = Path(__file__).resolve().parent.parent.parent / "costs.csv"
+print(" 🚩WRITING:", COSTS_FILE)
+
+Path(COSTS_FILE).parent.mkdir(parents=True, exist_ok=True)
+
+if not Path(COSTS_FILE).exists():
+    Path(COSTS_FILE).touch()
 
 def log_cost(function_name: str, input_tokens: int, output_tokens: int) -> None:
     cost_usd = (input_tokens * 0.000003) + (output_tokens * 0.000015)
     timestamp = datetime.now().isoformat()
     file_exists = os.path.isfile(COSTS_FILE)
 
+
+    logger.info(f"Reading costs from: {COSTS_FILE}")
     with open(COSTS_FILE, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         if not file_exists:

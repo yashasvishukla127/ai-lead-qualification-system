@@ -10,7 +10,7 @@ class LeadProfile(BaseModel):
     """
 
     intent_score: int = Field(
-        ...,
+        ..., # means that this is a required field
         ge=1,
         le=10,
         description="Lead intent score between 1 and 10."

@@ -2,14 +2,15 @@
 from pydantic import BaseModel, Field
 from src.models import LeadProfile, EmailDraft  # your existing models
 
-
 class AnalyseLeadRequest(BaseModel):
     lead_text: str = Field(..., min_length=10, description="Raw lead description text")
  #                       means must be min 10 char string , 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "lead_text": "Sarah runs a 15-person e-commerce startup. She mentioned her team spends 3hrs/day on manual reporting and is evaluating tools this quarter."
+                "lead_text": "Sarah runs a 15-person e-commerce startup."
+                " She mentioned her team spends 3hrs/day on manual reporting "
+                "and is evaluating tools this quarter."
             }
         }
     }

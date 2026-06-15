@@ -16,11 +16,11 @@ from pathlib import Path
 # if not file_exists:
 #     writer.writerow(
 #         ["timestamp", "function_name", "input_tokens", "output_tokens", "cost_usd"]
-#     )
+#  )
+
 
 router = APIRouter(prefix="/api/v1", tags=["Costs"])
 logger = logging.getLogger(__name__)
-
 
 
 

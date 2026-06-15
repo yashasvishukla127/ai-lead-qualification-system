@@ -23,6 +23,7 @@ def log_cost(function_name: str, input_tokens: int, output_tokens: int) -> None:
 
 
     logger.info(f"Reading costs from: {COSTS_FILE}")
+                      # a means add new line and append
     with open(COSTS_FILE, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         if not file_exists:

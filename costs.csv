@@ -16,3 +16,5 @@ timestamp,function_name,input_tokens,output_tokens,cost_usd
 2026-06-13T09:38:30.205196,generate_response,314,157,0.003297
 2026-06-13T09:38:30.909917,generate_response,414,166,0.003732
 2026-06-13T09:38:31.444737,generate_response,520,157,0.003915
+2026-06-14T21:15:17.603522,generate_response,146,70,0.001488
+2026-06-14T21:15:18.131406,generate_response,177,108,0.002151

@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
     summary="Analyse a lead and generate email + follow-up angles",
 )
 async def analyse_lead(request: AnalyseLeadRequest) -> AnalyseLeadResponse:
+    
     cid = get_correlation_id()
     logger.info(f"Received lead analysis request | length={len(request.lead_text)}")
 

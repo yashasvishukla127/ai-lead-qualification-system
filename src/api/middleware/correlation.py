@@ -15,8 +15,8 @@ from src.utils.logger import correlation_id_var
 
 class CorrelationIDMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next) -> Response:
-        # Use incoming header or generate a fresh UUID
-        cid = request.headers.get("x-request-id", str(uuid.uuid4()))
+        
+        cid = request.headers.get("x-request-id", str(uuid.uuid4()))  # Use incoming header or generate a fresh UUID
         token = correlation_id_var.set(cid)  # bind to this async context
 
         try:

@@ -14,12 +14,17 @@ from src.utils.logger import correlation_id_var
 
 
 class CorrelationIDMiddleware(BaseHTTPMiddleware):
+    #   here in Requeset - we have kept what request we were processing 
     async def dispatch(self, request: Request, call_next) -> Response:
         
-        cid = request.headers.get("x-request-id", str(uuid.uuid4()))  # Use incoming header or generate a fresh UUID
-        token = correlation_id_var.set(cid)  # bind to this async context
+        # flow -> 2 -  Use incoming header or generate a fresh UUID
+        cid = request.headers.get("x-request-id", str(uuid.uuid4()))  
+        token = correlation_id_var.set(cid)  # bind to this async context / so that later memory 
+        
+        # flow -> 2 - for this paritcular request we can get the correlation id and                                        # could get cleaned of 
 
-        try:
+        try:              # flow -> 3 - call the next middleware   
+                          #  <- will go back to main.py continue the request
             response: Response = await call_next(request)
         finally:
             correlation_id_var.reset(token)  # always clean up

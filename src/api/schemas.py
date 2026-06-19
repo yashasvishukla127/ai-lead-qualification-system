@@ -37,7 +37,7 @@ class HealthResponse(BaseModel):
 
 class CostEntry(BaseModel):
     timestamp: str
-    # provider: str
+    model: str
     function_name: str
     # function_version: str
     input_tokens: int

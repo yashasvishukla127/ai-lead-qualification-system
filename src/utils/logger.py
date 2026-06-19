@@ -5,6 +5,7 @@ from contextvars import ContextVar
 
 # One ContextVar per async task — safe with FastAPI's async handlers
 correlation_id_var: ContextVar[str] = ContextVar("correlation_id", default="")
+# context var acts like storage locker isolated to current asynchornous request
 
 
 def get_correlation_id() -> str:
@@ -16,6 +17,8 @@ def set_correlation_id(value: str) -> object:
     return correlation_id_var.set(value)
 
 
+
+#this goes below in configure_logging - >
 class CorrelationFilter(logging.Filter):
     """Injects correlation_id into every LogRecord automatically."""
     def filter(self, record: logging.LogRecord) -> bool:

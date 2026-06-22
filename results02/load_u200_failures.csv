@@ -1,0 +1,2 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+POST,/api/v1/analyse-lead,HTTPError('422 Client Error: Unprocessable Content for url: /api/v1/analyse-lead'),373,2026-06-22T02:31:51Z,2026-06-22T02:32:33Z

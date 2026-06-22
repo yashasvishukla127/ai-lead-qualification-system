@@ -1,0 +1,3 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+POST,/api/v1/analyse-lead,HTTPError('500 Server Error: Internal Server Error for url: /api/v1/analyse-lead'),373,2026-06-19T13:43:58Z,2026-06-19T13:44:34Z
+POST,/api/v1/analyse-lead,HTTPError('422 Client Error: Unprocessable Content for url: /api/v1/analyse-lead'),19,2026-06-19T13:43:59Z,2026-06-19T13:44:35Z

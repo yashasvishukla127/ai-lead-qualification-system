@@ -8,9 +8,9 @@ class AnalyseLeadRequest(BaseModel):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "lead_text": "Sarah runs a 15-person e-commerce startup."
-                " She mentioned her team spends 3hrs/day on manual reporting "
-                "and is evaluating tools this quarter."
+                "lead_text": "Yashasvi a startup owner , related to automation ."
+                " wants to buy a duplex ultra luxury villa  "
+                "in Greater Noida region "
             }
         }
     }

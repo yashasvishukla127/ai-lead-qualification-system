@@ -1,11 +1,4 @@
----
-title: AI Lead Qualification System
-emoji: 🚀
-colorFrom: blue
-colorTo: green
-sdk: docker
-pinned: false
----
+<!--  -->
 
 # AI Lead Qualification System
 
@@ -95,3 +88,14 @@ Run tests:
 pytest tests/test_api.py -v
 pytest tests/test_errors.py -v
 pytest tests/test_pipeline.py -v
+
+<!-- 
+
+---
+title: AI Lead Qualification System
+emoji: 🚀
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+--- -->

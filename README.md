@@ -1,3 +1,19 @@
+---
+title: AI Lead Qualification System
+emoji: 🚀
+colorFrom: blue
+colorTo: green
+sdk: streamlit
+sdk_version: "1.48.0"
+app_file: app.py
+pinned: false
+---
+
+# AI Lead Qualification System
+
+
+
+
 # AI Lead Qualification System
 
 > Production-style lead analysis and email drafting pipeline — built as Project 1 

@@ -28,7 +28,8 @@ async def generate_response(
         response = await client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             temperature=temperature,
-            max_tokens=700,
+            max_tokens=1200,
+            response_format={"type": "json_object"},
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user",   "content": user_prompt}

@@ -32,3 +32,8 @@
 [2026-06-13T07:59:30.626420] | analyse_lead | APIConnectionError | [groq] APIConnectionError: Connection error.
 [2026-06-13T07:59:30.632854] | analyse_lead | ValidationError | fields=['()']
 [2026-06-13T07:59:30.639182] | analyse_lead | ValidationError | fields=["('intent_score',)", "('situation_summary',)", "('urgency',)", "('is_first_buyer',)", "('recommended_approach',)", "('confidence',)"]
+[2026-06-24T05:09:58.944306] | analyse_lead | ValidationError | fields=["('intent_score',)", "('is_first_buyer',)"]
+[2026-06-24T05:09:59.541333] | analyse_lead | ValidationError | fields=["('intent_score',)", "('is_first_buyer',)"]
+[2026-06-24T05:09:59.873152] | analyse_lead | ValidationError | fields=["('intent_score',)", "('is_first_buyer',)"]
+[2026-06-24T05:10:00.466455] | analyse_lead | ValidationError | fields=["('intent_score',)", "('is_first_buyer',)"]
+[2026-06-24T05:10:01.060388] | analyse_lead | ValidationError | fields=["('intent_score',)", "('is_first_buyer',)"]

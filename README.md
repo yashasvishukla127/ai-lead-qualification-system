@@ -3,9 +3,7 @@ title: AI Lead Qualification System
 emoji: 🚀
 colorFrom: blue
 colorTo: green
-sdk: streamlit
-sdk_version: "1.48.0"
-app_file: app.py
+sdk: docker
 pinned: false
 ---
 

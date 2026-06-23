@@ -1,0 +1,16 @@
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /code
+
+# Copy requirements file first to leverage Docker caching
+COPY ./requirements.txt /code/requirements.txt
+
+# Install dependencies
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+# Copy the rest of the application code
+COPY . /code
+
+# Hugging Face Spaces runs on port 7860 by default
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "7860"]
